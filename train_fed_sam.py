@@ -72,10 +72,11 @@ if args.data=='Prostate':
     data_path = '/mnt/diskB/name/Prostate_processed_1024'
 elif args.data=='Fundus':
     # client_name =  ['G1020', 'ORIGA', 'REFUGE','Drishti-GS1']# ,'RIM-ONE'
-    client_name =  ['REFUGE', 'ORIGA','G1020','Drishti-GS1']# ,'RIM-ONE',
+    #client_name =  ['REFUGE', 'ORIGA','G1020','Drishti-GS1']# ,'RIM-ONE',
+    client_name =  ['Drishti-GS1', 'Drishti-GS1', 'Drishti-GS1', 'Drishti-GS1']
     # client_name =  ['RIM-ONE','Drishti-GS1']# ,
     # Drishti不是1,'RIM-ONE'也不是
-    data_path = '/mnt/diskB/name/Fundus_1024'
+    data_path = './data/Fundus_1024'
 elif args.data=='Nuclei':
     # client_name = ['MoNuSAC2018','PanNuke2','PanNuke3','TNBC','MoNuSAC2020']
     #client_name = ['TNBC','MoNuSAC2018','MoNuSAC2020']# ,'PanNuke3','PanNuke2'
@@ -306,9 +307,10 @@ def test(site_index, test_net):
     # print('test',site_index,len(test_data_list))
     for fid, filename in enumerate(test_data_list):
         # print(fid)
+        print(filename)
         data = np.load(filename)/ 255.0
         # print('data',data)
-        mask_data = np.load(filename.replace("data", "label"))
+        mask_data = np.load(filename.replace("data_npy", "label_npy"))
         # why expand_dims?
         image = np.expand_dims(data[..., :3].transpose(2, 0, 1), axis=0)
         mask = np.expand_dims(mask_data.transpose(2, 0, 1), axis=0)
@@ -419,18 +421,20 @@ def copy_outer_net(fast_weights,net_current):
 
 if __name__ == "__main__":
     ## make logger file
+
     if not os.path.exists(snapshot_path):
         os.makedirs(snapshot_path)
     if not os.path.exists(snapshot_path + '/model'):
         os.makedirs(snapshot_path + '/model')
     if os.path.exists(snapshot_path + '/code'):
         shutil.rmtree(snapshot_path + '/code')
-    shutil.copytree('.', snapshot_path + '/code', shutil.ignore_patterns(['.git','__pycache__']))
-
+    #shutil.copytree('.', snapshot_path + '/code', shutil.ignore_patterns(['.git','__pycache__']))
+    
     logging.basicConfig(filename=snapshot_path+"/log.txt", level=logging.INFO,
                         format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
     logging.info(str(args))
+
     GPUdevice = torch.device('cuda', int(args.gpu))
     pos_weight = torch.ones([1]).cuda(device=GPUdevice)*2
     criterion_G = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
