@@ -7,8 +7,8 @@ from PIL import Image
 # client_name = ['RIM-ONE','G1020', 'ORIGA', 'REFUGE','Drishti-GS1']
 client_name = ['Drishti-GS1']
 client_num = len(client_name)
-data_path = '/mnt/diskB/name/Fundus'
-target_path = '/mnt/diskB/name/Fundus_1024'
+data_path = './data/Fundus'
+target_path = './data/Fundus_1024'
 if not os.path.exists(target_path):
     os.makedirs(target_path)
 # 还要生成test数据
@@ -82,8 +82,9 @@ for client_idx in range(client_num):
             nii_file_path = filename
             img_data = np.array(Image.open(nii_file_path).convert('RGB'))
             labelname = nii_file_path.replace('images','labels')
-            label_od_name = labelname[:-4]+'_ODsegSoftmap.png'
-            label_oc_name = labelname[:-4]+'_cupsegSoftmap.png'
+            print(labelname)
+            label_od_name = labelname[:-4] + "/SoftMap/drishtiGS_" + labelname[-7:-4]+'_ODsegSoftmap.png'
+            label_oc_name = labelname[:-4] + "/SoftMap/drishtiGS_" + labelname[-7:-4]+'_cupsegSoftmap.png'
             od = np.array(Image.open(label_od_name))
             oc = np.array(Image.open(label_oc_name))
             # 打印图像数据的形状
